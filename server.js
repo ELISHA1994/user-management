@@ -44,6 +44,11 @@ const handlebars = exphbs.create({ extname: '.hbs' });
 app.engine('.hbs', handlebars.engine);
 app.set("view engine", ".hbs");
 
+// Router
+app.get("", (req, res) => {
+    res.render("home");
+})
+
 export const server = http.createServer(app);
 server.listen(port);
 
