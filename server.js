@@ -10,11 +10,19 @@ import exphbs from "express-handlebars"
 
 
 import __dirname from "./approotdir.js";
+import db from "./model/index.js";
 import {normalizePort, onError, onListening} from "./utils/utils";
 
 // Global variables
 const debug = DBG('server:debug');
 const dbgerror = DBG('server:error');
+
+// Db synchronisation
+db.sequelize.sync({}).then(() => {
+    debug("Drop and re-sync")
+}).catch(err => {
+    dbgerror(err);
+});
 
 // Initialize the express app object
 export const app = express();
@@ -56,6 +64,5 @@ server.listen(port);
 server.on('request', (req, res) => {
     debug(`${new Date().toISOString()} request: ${req.method} ${req.url}`);
 });
-
 server.on("error", onError);
 server.on("listening", onListening);
