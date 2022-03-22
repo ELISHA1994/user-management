@@ -10,19 +10,47 @@ import exphbs from "express-handlebars"
 
 
 import __dirname from "./approotdir.js";
-import db from "./model/index.js";
-import {normalizePort, onError, onListening} from "./utils/utils";
+import db, {seedUserTable} from "./server/model/index.js";
+import UserRoute from "./server/routes/user.js"
+import {basicErrorHandler, handle404, normalizePort, onError, onListening} from "./server/utils/utils";
 
 // Global variables
 const debug = DBG('server:debug');
 const dbgerror = DBG('server:error');
 
 // Db synchronisation
-db.sequelize.sync({}).then(() => {
-    debug("Drop and re-sync")
-}).catch(err => {
+const eraseDatabase = true
+db.sequelize.sync({force: eraseDatabase}).then(async () => {
+    if (eraseDatabase) {
+        await db.User.bulkCreate([
+            {
+                first_name: "Amina",
+                last_name: "Dahatu",
+                email:     "adahatu@user.com",
+                phone:     "+2347023456789",
+                comment: "",
+            },
+            {
+                first_name: "Ali",
+                last_name: "Abubakar",
+                email:     "aabubakar@user.com",
+                phone:     "+2347023456789",
+                comment: "",
+            },
+            {
+                first_name: "Usman",
+                last_name: "Abubakar",
+                email:     "usmanabubakar@gmail.com",
+                phone:     "+2347023456789",
+                comment: "",
+                status:    "removed"
+            }
+        ])
+    }
+    debug("Drop and re-sync db.")
+}).catch((err) => {
     dbgerror(err);
-});
+})
 
 // Initialize the express app object
 export const app = express();
@@ -53,9 +81,12 @@ app.engine('.hbs', handlebars.engine);
 app.set("view engine", ".hbs");
 
 // Router
-app.get("", (req, res) => {
-    res.render("home");
-})
+app.use("/", UserRoute);
+
+// error handlers
+// catch 404 and forward to error handler
+app.use(handle404);
+app.use(basicErrorHandler);
 
 export const server = http.createServer(app);
 server.listen(port);

@@ -1,4 +1,4 @@
-import { port, server, app } from '../server.js';
+import { port, server, app } from '../../server.js';
 import { default as DBG } from 'debug';
 
 const debug = DBG('server:debug');
@@ -44,4 +44,25 @@ export function onListening() {
         ? 'pipe ' + addr
         : 'port ' + addr.port;
     debug(`Listening on ${bind}`);
+}
+
+export function handle404(req, res, next) {
+    const err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+}
+
+export function basicErrorHandler(err, req, res, next) {
+    // Defer to built-in error handler if headersSent
+    // See: http://expressjs.com/en/guide/error-handling.html
+    if (res.headersSent) {
+        return next(err)
+    }
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ?
+        err : {};
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 }

@@ -1,6 +1,6 @@
 import Sequelize from "sequelize";
 import UserModel from "./user.model.js";
-import {default as dbConfig} from "../config/db_config.js";
+import {default as dbConfig} from "../../config/db_config.js";
 
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     host: dbConfig.HOST,
@@ -16,9 +16,19 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
 
 const db = {};
 
-db.USER = UserModel(sequelize, Sequelize.DataTypes)
+db.User = UserModel(sequelize, Sequelize.DataTypes);
 
 db.Sequelize = Sequelize;
+db.Op = Sequelize.Op;
 db.sequelize = sequelize;
+
+export const seedUserTable = async () => {
+    await db.User.bulkCreate()
+    for (const user of users) {
+        await db.User.create({
+            ...user
+        });
+    }
+}
 
 export default db;
