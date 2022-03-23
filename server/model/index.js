@@ -14,7 +14,7 @@ import {default as dbConfig} from "../../config/db_config.js";
 //     }
 // });
 const sequelize = new Sequelize(
-    process.env.DB_URL, // your database url
+    process.env.DATABASE_URL,
     {
         dialect: 'postgres',
         protocol: 'postgres',
