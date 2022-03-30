@@ -10,7 +10,7 @@ import exphbs from "express-handlebars"
 
 
 import __dirname from "./approotdir.js";
-import db, {seedUserTable} from "./server/model/index.js";
+import db from "./server/model/index.js";
 import UserRoute from "./server/routes/user.js"
 import {basicErrorHandler, handle404, normalizePort, onError, onListening} from "./server/utils/utils";
 
@@ -43,7 +43,6 @@ db.sequelize.sync({force: eraseDatabase}).then(async () => {
                 email:     "usmanabubakar@gmail.com",
                 phone:     "+2347023456789",
                 comment: "",
-                status:    "removed"
             }
         ])
     }
@@ -63,7 +62,7 @@ app.set('port', port);
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(logger(process.env.REQUEST_LOG_FORMAT || 'common', {
     stream: process.env.REQUEST_LOG_FILE  || 'log.txt' ?
         createStream(process.env.REQUEST_LOG_FILE || 'log.txt', {

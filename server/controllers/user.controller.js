@@ -136,9 +136,9 @@ export async function View(req, res, next) {
 // Delete User
 export async function RemoveUser(req, res, next) {
     try {
-        await db.User.update(
+        const user = await db.User.update(
             {
-                status: "removed"
+                status: 'removed'
             },
             {
                 where: {
